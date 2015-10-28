@@ -28,9 +28,13 @@ logger_release(struct logger * inst) {
 static int
 _logger(struct skynet_context * context, void *ud, int type, int session, uint32_t source, const void * msg, size_t sz) {
 	struct logger * inst = ud;
-	fprintf(inst->handle, "[:%08x] ",source);
+	if (type == 0) {
+		fprintf(inst->handle, "[:%08x] ",source);		
+	}
 	fwrite(msg, sz , 1, inst->handle);
-	fprintf(inst->handle, "\n");
+	if (type == 0) {
+		fprintf(inst->handle, "\n");		
+	}
 	fflush(inst->handle);
 
 	return 0;
@@ -39,7 +43,7 @@ _logger(struct skynet_context * context, void *ud, int type, int session, uint32
 int
 logger_init(struct logger * inst, struct skynet_context *ctx, const char * parm) {
 	if (parm) {
-		inst->handle = fopen(parm,"w");
+		inst->handle = fopen(parm,"a+");
 		if (inst->handle == NULL) {
 			return 1;
 		}
